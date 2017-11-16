@@ -1,0 +1,23 @@
+{
+  "name": "realtime-dashboard",
+  "version": "1.0.0",
+  "description": "<style>.markdown-preview {background: #FFF !important; color: #1f1f1f !important} .markdown-preview h1, .markdown-preview h2, .markdown-preview h3, .markdown-preview h4, .markdown-preview h5, .markdown-preview p {background: #FFF !important; color: #1f1f1f !important}</style>",
+  "main": "tracking.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/duyetdev/realtime-dashboard.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/duyetdev/realtime-dashboard/issues"
+  },
+  "homepage": "https://github.com/duyetdev/realtime-dashboard#readme",
+  "dependencies": {
+    "express": "^4.16.2",
+    "kafka-node": "^2.2.3"
+  }
+}
