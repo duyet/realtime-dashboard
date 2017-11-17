@@ -18,7 +18,6 @@ import json
 from pyspark import SparkContext
 from pyspark.streaming import StreamingContext
 from pyspark.streaming.kafka import KafkaUtils
-from kafka import SimpleProducer, KafkaClient
 from kafka import KafkaProducer
 
 producer = KafkaProducer(bootstrap_servers='localhost:9092',
@@ -44,6 +43,12 @@ def handler(message, output_topic="website-report"):
         producer.flush()
 
 
+def kafka_send(topic, message):
+    print ("11111111111111111111111111111111111111111111")
+    producer.send(topic, message)
+    producer.flush()
+
+
 if __name__ == "__main__":
     if len(sys.argv) != 4:
         print("Usage: spark_server.py <zk> <input_topic> <output_topic>",
@@ -56,14 +61,20 @@ if __name__ == "__main__":
     ssc = StreamingContext(sc, 3)
 
     zkQuorum, topic, output_topic = sys.argv[1:]
+    print ("zkQuorum", zkQuorum)
+    print ("topic", topic)
+    print ("output_topic", output_topic)
+
     kvs = KafkaUtils.createStream(ssc, zkQuorum, "spark-streaming-consumer",
                                   {topic: 1})
 
-    kvs.count().map(lambda x: 'Number of event this batch: %s' % x).pprint()
-    lines = kvs.map(lambda x: get_json(x[1])).filter(lambda x: x)
-    lines.pprint()
+    # Format and filter DStream
+    lines = kvs.map(lambda x: get_json(x[1]))
+    lines.transform(lambda x: kafka_send(output_topic, {"hits": x}))
 
-    kvs.foreachRDD(lambda message: handler(message, output_topic))
+    # Send number of hits to output_topic
+    lines.map(lambda rdd: kafka_send(output_topic, rdd))
+    lines.pprint()
 
     ssc.start()
     ssc.awaitTermination()

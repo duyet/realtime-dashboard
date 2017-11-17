@@ -1,5 +1,3 @@
-<style>.markdown-preview {background: #FFF !important; color: #1f1f1f !important} .markdown-preview h1, .markdown-preview h2, .markdown-preview h3, .markdown-preview h4, .markdown-preview h5, .markdown-preview p {background: #FFF !important; color: #1f1f1f !important}</style>
-
 # Realtime Dashboard
 Real-time report dashboard with Apache Kafka, Apache Spark Streaming and Node.js
 
@@ -22,34 +20,30 @@ cd realtime-dashboard/
 Download [Apache Spark 2.2.0](http://spark.apache.org/downloads.html)
 
 ```sh
-cd $REALTIME_DASHBOARD_HOME
+cd $RRD_HOME
 wget https://www.apache.org/dyn/closer.lua/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz
 tar -xzf spark-2.2.0-bin-hadoop2.7.tgz
-export SPARK_HOME=$REALTIME_DASHBOARD_HOME/spark-2.2.0-bin-hadoop2.7
+export SPARK_HOME=$RRD_HOME/spark-2.2.0-bin-hadoop2.7
 ```
 
 Download Kafka
 ```sh
-cd $REALTIME_DASHBOARD_HOME
+cd $RRD_HOME
 wget http://mirrors.viethosting.com/apache/kafka/1.0.0/kafka_2.11-1.0.0.tgz
 tar -xzf kafka_2.11-1.0.0.tgz
-export KAFKA_HOME=$REALTIME_DASHBOARD_HOME/kafka_2.11-1.0.0
+export KAFKA_HOME=$RRD_HOME/kafka_2.11-1.0.0
 ```
 
-Download Kafka Proxy
+Install Node.js packages
 ```sh
-cd $REALTIME_DASHBOARD_HOME
-curl -L https://github.com/mailgun/kafka-pixy/releases/download/v0.14.0/kafka-pixy-v0.14.0-linux-amd64.tar.gz | tar xz
-cd kafka-pixy-v0.14.0-linux-amd64
-cp default.yaml config.yaml
+npm install
 ```
-
 
 ## 2. Start Kafka Server
 
 Start Zookeeper and Kafka
 ```sh
-cd $REALTIME_DASHBOARD_HOME/kafka_2.11-1.0.0
+cd $RRD_HOME/kafka_2.11-1.0.0
 
 # Start zookeeper
 bin/zookeeper-server-start.sh config/zookeeper.properties &
@@ -66,8 +60,14 @@ bin/kafka-topics.sh --create --zookeeper localhost:2181 --replication-factor 1 -
 
 We can't access Kafka directly via HTTP, so we start **Kafka Proxy** :
 ```sh
-cd $REALTIME_DASHBOARD_HOME/kafka-pixy-v0.14.0-linux-amd64
-./kafka-pixy --config config.yaml
+node nodejs-kafka-proxy/server.js
+
+# [2017-11-16 14:24:03,008] INFO Accepted socket connection from /127.0.0.1:42984 (org.apache.zookeeper.server.NIOServerCnxnFactory)
+# [2017-11-16 14:24:03,010] WARN Connection request from old client /127.0.0.1:42984; will be dropped if server is in r-o mode (org.apache.zookeeper.server.ZooKeeperServer)
+# [2017-11-16 14:24:03,010] INFO Client attempting to establish new session at /127.0.0.1:42984 (org.apache.zookeeper.server.ZooKeeperServer)
+# [2017-11-16 14:24:03,025] INFO Established session 0x15fc38ffab40011 with negotiated timeout 30000 for client /127.0.0.1:42984 (org.apache.zookeeper.server.ZooKeeperServer)
+# Example app listening on port 3000!
+
 ```
 
 Test (Optional) Kafka Produder and Consumer
@@ -91,6 +91,16 @@ This is another message
 {"client_id": "blog.duyet.net", "time": "1510736940", "event": "click", "ip":"1.2.3.5", "UA": "Firefox"}
 ```
 
+Test proxy server:
+```
+http://localhost:3000/proxy/website-collect?message=hello
+```
+
+You will see in Consumer Kafka:
+
+![](.github/images/test_kafka.png)
+
+
 ## 3. Apache Spark Streaming
 
 ![](https://spark.apache.org/docs/latest/img/streaming-arch.png)
@@ -101,6 +111,6 @@ Submit Spark Streaming script
 # Usage: spark_server.py <zk> <input_topic> <output_topic>
 
 $SPARK_HOME/bin/spark-submit --packages org.apache.spark:spark-streaming-kafka-0-8_2.11:2.0.2 \
-    $REALTIME_DASHBOARD_HOME/spark/spark_server.py \
-    localhost:2181 website-tracking website-report
+    $RRD_HOME/spark/spark_server.py \
+    localhost:2181 website-collect website-report
 ```

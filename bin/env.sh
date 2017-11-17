@@ -1,2 +1,7 @@
-export REALTIME_DASHBOARD_HOME="${1:-${PWD}}"
-echo "REALTIME_DASHBOARD_HOME = $REALTIME_DASHBOARD_HOME"
+echo "Usage: source ./bin/env.sh"
+echo ""
+
+export RRD_HOME="${1:-${PWD}}"
+echo "RRD_HOME = $RRD_HOME"
+
+echo "Done!"
