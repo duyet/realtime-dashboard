@@ -21,7 +21,7 @@ Download [Apache Spark 2.2.0](http://spark.apache.org/downloads.html)
 
 ```sh
 cd $RRD_HOME
-wget https://www.apache.org/dyn/closer.lua/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz
+wget http://archive.apache.org/dist/spark/spark-2.2.0/spark-2.2.0-bin-hadoop2.7.tgz
 tar -xzf spark-2.2.0-bin-hadoop2.7.tgz
 export SPARK_HOME=$RRD_HOME/spark-2.2.0-bin-hadoop2.7
 ```
