@@ -18,6 +18,6 @@
   "homepage": "https://github.com/duyetdev/realtime-dashboard#readme",
   "dependencies": {
     "express": "^4.16.2",
-    "kafka-node": "^4.0.0"
+    "kafka-node": "^5.0.0"
   }
 }
